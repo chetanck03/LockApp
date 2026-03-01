@@ -1,7 +1,16 @@
 import axios from 'axios';
 import { storage } from './storage';
 
-const API_BASE_URL = 'https://your-backend-url.com';
+// Change this based on your environment
+// For local development: http://localhost:3000
+// For Android emulator: http://10.0.2.2:3000
+// For physical device on same network: http://YOUR_COMPUTER_IP:3000
+// For production: https://your-backend-url.com
+const API_BASE_URL = __DEV__ 
+  ? 'http://10.0.2.2:3000'  // Android emulator
+  // ? 'http://localhost:3000'  // iOS simulator
+  // ? 'http://192.168.31.138:3000'  // Physical device (your Mac IP)
+  : 'https://your-backend-url.com';  // Production
 
 const api = axios.create({
   baseURL: API_BASE_URL,
