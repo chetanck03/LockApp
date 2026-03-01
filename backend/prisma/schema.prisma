@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password_hash String
+  role          String    @default("parent")
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  devices       Device[]
+}
+
+model Device {
+  id              String    @id @default(uuid())
+  user_id         String
+  device_name     String
+  fcm_token       String?
+  is_online       Boolean   @default(false)
+  android_version String?
+  last_seen       DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+  user            User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  policies        Policy[]
+  logs            Log[]
+
+  @@index([user_id])
+}
+
+model Policy {
+  id           String    @id @default(uuid())
+  device_id    String
+  policy_type  String
+  payload      Json
+  status       String    @default("pending")
+  executed_at  DateTime?
+  created_at   DateTime  @default(now())
+  device       Device    @relation(fields: [device_id], references: [id], onDelete: Cascade)
+
+  @@index([device_id])
+  @@index([status])
+}
+
+model Log {
+  id         String   @id @default(uuid())
+  device_id  String
+  action     String
+  result     Json
+  timestamp  DateTime @default(now())
+  device     Device   @relation(fields: [device_id], references: [id], onDelete: Cascade)
+
+  @@index([device_id])
+  @@index([timestamp])
+}
