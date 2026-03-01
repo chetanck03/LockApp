@@ -8,13 +8,19 @@ export const useAuthStore = create((set) => ({
   error: null,
 
   login: async (email, password) => {
+    console.log('AuthStore: Starting login');
     set({ isLoading: true, error: null });
     try {
+      console.log('AuthStore: Calling authService.login');
       const data = await authService.login(email, password);
+      console.log('AuthStore: Login response:', data);
       set({ user: data.user, isAuthenticated: true, isLoading: false });
       return data;
     } catch (error) {
-      set({ error: error.response?.data?.error || 'Login failed', isLoading: false });
+      console.error('AuthStore: Login error:', error);
+      console.error('AuthStore: Error response:', error.response?.data);
+      const errorMsg = error.response?.data?.error || error.message || 'Login failed';
+      set({ error: errorMsg, isLoading: false });
       throw error;
     }
   },

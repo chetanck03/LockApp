@@ -16,15 +16,24 @@ export default function LoginScreen({ navigation }) {
   const { login, isLoading, error } = useAuthStore();
 
   const handleLogin = async () => {
+    console.log('=== LOGIN ATTEMPT ===');
+    console.log('Email:', email);
+    console.log('Password length:', password.length);
+    
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
     try {
-      await login(email, password);
+      console.log('Calling login...');
+      const result = await login(email, password);
+      console.log('Login successful:', result);
     } catch (err) {
-      Alert.alert('Login Failed', error || 'Invalid credentials');
+      console.error('Login error:', err);
+      console.error('Error response:', err.response?.data);
+      console.error('Error message:', err.message);
+      Alert.alert('Login Failed', error || err.message || 'Invalid credentials');
     }
   };
 

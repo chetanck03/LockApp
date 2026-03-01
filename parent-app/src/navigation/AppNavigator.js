@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { storage } from '../services/storage';
+import { useAuthStore } from '../store/authStore';
 
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
@@ -11,7 +12,7 @@ import AppsListScreen from '../screens/AppsListScreen';
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +21,10 @@ export default function AppNavigator() {
 
   const checkAuth = async () => {
     const token = await storage.getToken();
-    setIsAuthenticated(!!token);
+    if (token) {
+      const user = await storage.getUser();
+      useAuthStore.setState({ isAuthenticated: true, user });
+    }
     setIsLoading(false);
   };
 

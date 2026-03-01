@@ -10,10 +10,19 @@ export const authService = {
   },
 
   async login(email, password) {
-    const response = await api.post('/auth/login', { email, password });
-    await storage.saveToken(response.data.token);
-    await storage.saveUser(response.data.user);
-    return response.data;
+    console.log('AuthService: Login request for:', email);
+    console.log('AuthService: API URL:', api.defaults.baseURL);
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      console.log('AuthService: Login response:', response.data);
+      await storage.saveToken(response.data.token);
+      await storage.saveUser(response.data.user);
+      return response.data;
+    } catch (error) {
+      console.error('AuthService: Login failed:', error.message);
+      console.error('AuthService: Error details:', error.response?.data);
+      throw error;
+    }
   },
 
   async logout() {
